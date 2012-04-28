@@ -117,7 +117,7 @@ def file_share():
         aes_key = request.headers['X-Symmetric-Key']
         recipient = request.form['recipient']
         filename = request.form['filename']
-        if copy_file(db, username, recipient, filename, aes_key):
+        if copy_file(mongo.db, username, recipient, filename, aes_key):
             return json_success()
     
     return json_error('not authenticated', 401)
