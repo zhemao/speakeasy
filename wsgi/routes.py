@@ -46,4 +46,4 @@ def get_pubkey():
 
 @app.route('/config')
 def get_config():
-    return str(app.config)
+    return str(dict(app.config))
