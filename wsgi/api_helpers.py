@@ -1,8 +1,8 @@
 import json
 
 def json_error(result, code):
-    return json.dumps({'result': result}), code, 
-                {'Content-Type', 'application/json'}
+    return (json.dumps({'result': result}), code, 
+                {'Content-Type', 'application/json'})
 
 def json_success():
     return '{"result":"success"}', 200, {'Content-Type', 'application/json'}
