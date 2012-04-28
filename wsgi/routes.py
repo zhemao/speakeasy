@@ -56,7 +56,7 @@ def authenticate():
     return resp
 
 @app.route('/file/upload', methods=['POST'])
-def upload_file():
+def file_upload():
     username = current_user(app, request.cookies)
     if username:    
         f = request.files['file']
@@ -69,7 +69,7 @@ def upload_file():
     return json_error('not authenticated', 401)
     
 @app.route('/file/download/<filename>')
-def download_file(filename):
+def file_download(filename):
     username = current_user(app, request.cookies)
     if username:
         f, aes_key = find_file(mongo.db, username, filename)
@@ -89,6 +89,27 @@ def file_list():
     if username:
         files = list_files(mongo.db, username)
         return json_result({'result': 'success', 'files': files})
+    
+    return json_error('not authenticated', 401)
+
+@app.route('/file/info/<filename>')
+def file_info(filename):
+    username = current_user(app, request.cookies)
+    if username:
+        finfo = get_fileinfo(mongo.db, username, filename)
+        resp = {'result':'success', 'fileinfo':finfo}
+        return json_result(resp)
+    
+    return json_error('not authenticated', 401)
+
+@app.route('/file/share/<filename>', methods=['POST'])
+def file_share(filename):
+    username = current_user(app, request.cookies)
+    if username:
+        aes_key = request.headers['X-Symmetric-Key']
+        recipient = requests.form['recipient']
+        if copy_file(db, username, recipient, aes_key):
+            return json_success()
     
     return json_error('not authenticated', 401)
 
