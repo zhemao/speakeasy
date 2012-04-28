@@ -18,7 +18,7 @@ def authenticate_user(db, app, form):
         pubkey = key_entry['pubkey']
         if check_signature(pubkey, shibboleth, signature):
             serv_key = RSA.importKey(app.config['PRIV_KEY'])
-            signature, _ = serv_key.sign(username, rng(384))
+            signature = serv_key.sign(str(username), rng(384))[0]
             return str(signature)
         
     return None
