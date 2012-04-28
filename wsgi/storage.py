@@ -35,3 +35,18 @@ def find_file(db, username, filename):
         return gfs.get(finfo['file_id']), finfo['aes_key']
 
     return None
+
+def list_files(db, username):
+    files = db.fileinfo.group(['filename'], {'username': username}, 
+                {'date': datetime(1970, 1, 1)},
+                '''
+                function(obj, prev){
+                    if(obj.date > prev){
+                        prev.datae = obj.date;
+                        prev.filename = obj.filename;
+                        prev.aes_key = obj.aes_key;
+                    }
+                }
+                ''')
+
+    return [f for f in files]

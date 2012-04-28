@@ -66,8 +66,7 @@ def upload_file():
             return json_success()
         return json_error('database error', 500)
 
-    else:
-        return json_error('not authenticated', 401)
+    return json_error('not authenticated', 401)
     
 @app.route('/file/download/<filename>')
 def download_file(filename):
@@ -81,6 +80,15 @@ def download_file(filename):
                    'X-Symmetric-Key': aes_key}
 
         return f.read(), 200, headers
-    else:
-        return json_error('not authenticated', 401)
+    
+    return json_error('not authenticated', 401)
+
+@app.route('/file/list')
+def file_list():
+    username = current_user(app, request.cookies)
+    if username:
+        files = list_files(mongo.db, username)
+        return json_result({'result': 'success', 'files': files})
+    
+    return json_error('not authenticated', 401)
 
