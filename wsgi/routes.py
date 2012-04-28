@@ -102,13 +102,14 @@ def file_info(filename):
     
     return json_error('not authenticated', 401)
 
-@app.route('/file/share/<filename>', methods=['POST'])
-def file_share(filename):
+@app.route('/file/share', methods=['POST'])
+def file_share():
     username = current_user(app, request.cookies)
     if username:
         aes_key = request.headers['X-Symmetric-Key']
         recipient = requests.form['recipient']
-        if copy_file(db, username, recipient, aes_key):
+        filename = requests.form['filename']
+        if copy_file(db, username, recipient, filename, aes_key):
             return json_success()
     
     return json_error('not authenticated', 401)
