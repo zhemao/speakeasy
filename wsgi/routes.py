@@ -44,6 +44,3 @@ def get_pubkey():
     else:
         return '', 404, {}
 
-@app.route('/config')
-def get_config():
-    return str(dict(app.config))
