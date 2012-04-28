@@ -43,3 +43,7 @@ def get_pubkey():
         return entry['pubkey'], 200, {'Content-Type': 'text/plain'}
     else:
         return '', 404, {}
+
+@app.route('/config')
+def get_config():
+    return str(app.config)
