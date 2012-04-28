@@ -11,12 +11,10 @@ mongo = PyMongo(app)
 
 @app.route('/')
 def readme():
-    fname = os.getenv('OPENSHIFT_GEAR_DIR') + 'README'
+    fname = os.getenv('OPENSHIFT_DATA_DIR') + 'README.html'
     f = open(fname)
-    html = '''<html>
-                <head><title>Speakeasy</title></head>
-                <body>%s</body>
-              </html>''' % f.read()
+    html = f.read()
+    f.close()
     return html
 
 @app.route('/pubkey/add', methods=['POST'])

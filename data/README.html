@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <title>Speakeasy</title>
+</head>
+
+<body>
+<pre>
+
+Speakeasy: File Storage for the Paranoid
+================================================
+
+Given recent events such as SOPA, CISPA, the takedown of MegaUpload, it has
+become clear that a new method of storing and sharing files online is required,
+a method that protects the user from the prying eyes of governments and 
+cybercriminals. 
+
+In the end, this can only be achieved by making sure the stored data is 
+accessible only to the owner, including the storage service provider. This can 
+be done using strong public-key encryption.
+
+Other file lockers such as Dropbox do encrypt user's data, but in the end, they
+all use symmetric ciphers and keep a copy of the shared secret, allowing them,
+(or anyone who gains access to the key) to decrypt the user's files.
+
+Speakeasy is different in that it uses RSA, a well-known public-key cipher. 
+The file is encrypted with a symmetric AES cipher. The AES key is then 
+encrypted with the user's RSA public key, and both ciphertext and key are
+uploaded to the server. In order to decrypt the file, the AES key must be
+decrypted by the user's private key, which only the user has access to, and
+the decrypted AES key can then be used to decrypt the file. All transmission
+of the file between client and server and all storage on the server are fully
+encrypted, ensuring that only the user can ever see the plaintext. 
+
+Speakeasy also allows you to share files with other users on the server by
+reencrypting the AES key with the other user's public key. 
+
+Speakeasy is designed for Red Hat's new OpenShift platform and uses MongoDB
+with GridFS for storage. 
+
+</pre>
+</body>
+</html>
