@@ -115,7 +115,7 @@ def file_share():
     username = current_user(app, request.cookies)
     if username:
         aes_key = request.headers['X-Symmetric-Key']
-        recipient = requests.form['recipient']
+        recipient = request.form['recipient']
         filename = requests.form['filename']
         if copy_file(db, username, recipient, filename, aes_key):
             return json_success()
