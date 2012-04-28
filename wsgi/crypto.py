@@ -8,4 +8,7 @@ def server_key(app, key='PUB_KEY'):
 
 def check_signature(pubkey, shibboleth, signature):
     rsakey = RSA.importKey(pubkey)
+    print pubkey
+    print shibboleth
+    print signature
     return rsakey.verify(shibboleth, (int(signature),))

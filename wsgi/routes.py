@@ -18,8 +18,6 @@ def add_pubkey():
     shibboleth = request.form['shibboleth']
     signature = request.form['signature']
 
-    print pubkey, signature
-
     key = db.keys.find_one({'username': username})
     if key:
         return '{"result": "username already exists"}', 400, {}
