@@ -60,9 +60,9 @@ def upload_file():
     username = current_user(app, request.cookies)
     if username:    
         f = request.files['file']
-        cipher = request.headers['X-Symmetric-Cipher']
+        aes_key = request.headers['X-Symmetric-Key']
 
-        if store_file(f, username, cipher, mongo.db):
+        if store_file(f, username, aes_key, mongo.db):
             return json_success()
         return json_error('database error', 500)
 
@@ -73,12 +73,12 @@ def upload_file():
 def download_file(filename):
     username = current_user(app, request.cookies)
     if username:
-        f, cipher = find_file(mongo.db, username, filename)
+        f, aes_key = find_file(mongo.db, username, filename)
 
         headers = {'Content-Type': f.content_type,
                    'Content-Length': f.length,
                    'Content-Disposition': 'attachment; filename='+f.filename,
-                   'X-Symmetric-Cipher': cipher}
+                   'X-Symmetric-Key': aes_key}
 
         return f.read(), 200, headers
     else:
