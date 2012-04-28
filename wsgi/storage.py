@@ -2,7 +2,7 @@ import gridfs
 from werkzeug import secure_filename
 from pymongo import ASCENDING, DESCENDING
 
-def store_file(f, username, db):
+def store_file(f, username, cipher, db):
     fname = secure_filename(f.filename)
     
     gfs = gridfs.GridFS(db)
@@ -18,6 +18,7 @@ def store_file(f, username, db):
     finfo = {'file_id': gf._id, 
              'username': username, 
              'filename': fname,
+             'cipher': cipher,
              'date': date}
 
     return db.fileinfo.insert(finfo)
@@ -30,6 +31,6 @@ def find_file(db, username, filename):
     gfs = gridfs.GridFS(db)
 
     if finfo:
-        return gfs.get(finfo['file_id'])
+        return gfs.get(finfo['file_id']), finfo['cipher']
 
     return None
