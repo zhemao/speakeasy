@@ -88,7 +88,7 @@ def file_download(filename):
 def file_list():
     username = current_user(app, request.cookies)
     if username:
-        files = list_files(mongo.db, username)
+        files = [finfo['filename'] for finfo in list_files(mongo.db, username)]
         return json_result({'result': 'success', 'files': files})
     
     return json_error('not authenticated', 401)
@@ -100,6 +100,7 @@ def file_info(filename):
         finfo = get_fileinfo(mongo.db, username, filename)
         f = find_file(mongo.db, finfo)
         del finfo['file_id']
+        finfo['date'] = finfo['date'].strftime('%Y-%m-%d %H:%M:%S')
         finfo['type'] = f.content_type
         finfo['length'] = f.length
         

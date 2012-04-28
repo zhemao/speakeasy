@@ -56,7 +56,6 @@ def list_files(db, username):
                     if(obj.date > prev){
                         prev.date = obj.date;
                         prev.filename = obj.filename;
-                        prev.aes_key = obj.aes_key;
                     }
                 }
                 ''')
