@@ -1,10 +1,10 @@
 from setuptools import setup
 
-setup(name='YourAppName',
+setup(name='speakeasy',
       version='1.0',
-      description='OpenShift App',
-      author='Your Name',
-      author_email='example@example.com',
-      url='http://www.python.org/sigs/distutils-sig/',
+      description='A Communications Platform for Paranoid People',
+      author='Zhehao Mao',
+      author_email='zhehao.mao@gmail.com',
+      url='http://speakeasy-zhehao.rhcloud.com/',
       install_requires=['Flask', 'Flask-PyMongo', 'pycrypto'],
      )
