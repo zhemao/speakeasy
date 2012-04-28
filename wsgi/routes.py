@@ -12,4 +12,4 @@ def hello():
 
 @app.route('/pubkey/server')
 def server_pub():
-    return server_key(app).exportKey()    
+    return server_key(app).exportKey(), 200, {'Content-Type': 'text/plain'}
