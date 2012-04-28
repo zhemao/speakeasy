@@ -98,8 +98,8 @@ def file_info(filename):
     username = current_user(app, request.cookies)
     if username:
         finfo = get_fileinfo(mongo.db, username, filename)
-        del finfo['file_id']
         f = find_file(mongo.db, finfo)
+        del finfo['file_id']
         finfo['type'] = f.content_type
         finfo['length'] = f.length
         
