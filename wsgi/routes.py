@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, redirect
 from flask.ext.pymongo import PyMongo
 from crypto import *
 from api_helpers import *
@@ -11,11 +11,7 @@ mongo = PyMongo(app)
 
 @app.route('/')
 def readme():
-    fname = os.getenv('OPENSHIFT_DATA_DIR') + 'README.html'
-    f = open(fname)
-    html = f.read()
-    f.close()
-    return html
+    return redirect('/static/README.html')
 
 @app.route('/pubkey/add', methods=['POST'])
 def add_pubkey():
