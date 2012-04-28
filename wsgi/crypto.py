@@ -27,6 +27,6 @@ def current_user(app, cookies):
     username = cookies['username']
     signature = cookies['signature']
 
-    if check_signature(app['PUB_KEY'], username, signature):
+    if check_signature(app.config['PUB_KEY'], username, signature):
         return username
     return None
