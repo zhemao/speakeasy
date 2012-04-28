@@ -3,14 +3,21 @@ from flask.ext.pymongo import PyMongo
 from crypto import *
 from api_helpers import *
 from storage import *
+import os
 
 app = Flask(__name__)
 app.config.from_object('settings')
 mongo = PyMongo(app)
 
 @app.route('/')
-def hello():
-    return 'Hello World!'
+def readme():
+    fname = os.getenv('OPENSHIFT_GEAR_DIR')
+    f = open(fname)
+    html = '''<html>
+                <head><title>Speakeasy</title></head>
+                <body>%s</body>
+              </html>''' % f.read()
+    return html
 
 @app.route('/pubkey/add', methods=['POST'])
 def add_pubkey():
