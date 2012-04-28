@@ -100,6 +100,7 @@ def file_info(filename):
         finfo = get_fileinfo(mongo.db, username, filename)
         f = find_file(mongo.db, finfo)
         del finfo['file_id']
+        del finfo['_id']
         finfo['date'] = finfo['date'].strftime('%Y-%m-%d %H:%M:%S')
         finfo['type'] = f.content_type
         finfo['length'] = f.length
