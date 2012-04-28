@@ -33,10 +33,8 @@ def server_pub():
     return server_key(app).exportKey(), 200, {'Content-Type': 'text/plain'}
 
 @app.route('/pubkey/:username')
-def get_pubkey():
+def get_pubkey(username):
     db = mongo.db
-    username = request.form['username']
-
     entry = db.keys.find_one({'username': username})
 
     if entry:
