@@ -72,12 +72,13 @@ def file_upload():
 def file_download(filename):
     username = current_user(app, request.cookies)
     if username:
-        f, aes_key = find_file(mongo.db, username, filename)
+        finfo = get_fileinfo(mongo.db, username, filename)
+        f = find_file(mongo.db, finfo)
 
         headers = {'Content-Type': f.content_type,
                    'Content-Length': f.length,
                    'Content-Disposition': 'attachment; filename='+f.filename,
-                   'X-Symmetric-Key': aes_key}
+                   'X-Symmetric-Key': finfo['aes_key']}
 
         return f.read(), 200, headers
     
@@ -97,6 +98,11 @@ def file_info(filename):
     username = current_user(app, request.cookies)
     if username:
         finfo = get_fileinfo(mongo.db, username, filename)
+        del finfo['file_id']
+        f = find_file(mongo.db, finfo)
+        finfo['type'] = f.content_type
+        finfo['length'] = f.length
+        
         resp = {'result':'success', 'fileinfo':finfo}
         return json_result(resp)
     

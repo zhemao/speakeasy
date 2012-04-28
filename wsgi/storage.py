@@ -24,13 +24,11 @@ def store_file(f, username, aes_key, db):
 
     return db.fileinfo.insert(finfo)
 
-def find_file(db, username, filename):
-    finfo = get_fileinfo(db, username, filename)
-
+def find_file(db, finfo):
     gfs = gridfs.GridFS(db)
 
     if finfo:
-        return gfs.get(finfo['file_id']), finfo['aes_key']
+        return gfs.get(finfo['file_id'])
 
     return None
 
