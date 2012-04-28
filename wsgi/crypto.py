@@ -1,11 +1,13 @@
 from Crypto.PublicKey import RSA
 
-def server_key(app, key='PUB_KEY'):
-    f = open(app.config[key], 'r')
-    key = RSA.importKey(f.read())
-    f.close()
-    return key
-
 def check_signature(pubkey, shibboleth, signature):
     rsakey = RSA.importKey(pubkey)
     return rsakey.verify(str(shibboleth), (int(signature),))
+
+def current_user(app, cookies):
+    username = cookies['username']
+    signature = cookies['signature']
+
+    if check_signature(app['PUB_KEY'], username, signature):
+        return username
+    return None
