@@ -6,3 +6,9 @@ def server_key(app, key='PUB_KEY'):
     f.close()
     return key
 
+def check_signature(pubkey, shibboleth, signature):
+    try:
+        rsakey = RSA.importKey(pubkey)
+        return rsakey.verify(shibboleth, (int(signature),))
+    except ValueError:
+        return False
