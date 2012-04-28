@@ -12,7 +12,7 @@ def authenticate_user(db, app, form):
     shibboleth = form['shibboleth']
     signature = form['signature']
 
-    key_entry = db.find_one({'username': username})
+    key_entry = db.keys.find_one({'username': username})
 
     if key_entry:
         pubkey = key_entry['pubkey']
