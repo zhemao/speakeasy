@@ -35,6 +35,7 @@ def server_pub():
 @app.route('/pubkey/:username')
 def get_pubkey(username):
     db = mongo.db
+    print username
     entry = db.keys.find_one({'username': username})
 
     if entry:
