@@ -11,7 +11,7 @@ mongo = PyMongo(app)
 
 @app.route('/')
 def readme():
-    fname = os.getenv('OPENSHIFT_GEAR_DIR')
+    fname = os.getenv('OPENSHIFT_GEAR_DIR') + 'README'
     f = open(fname)
     html = '''<html>
                 <head><title>Speakeasy</title></head>
