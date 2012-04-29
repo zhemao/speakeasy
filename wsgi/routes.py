@@ -3,6 +3,7 @@ from flask.ext.pymongo import PyMongo
 from crypto import *
 from api_helpers import *
 from storage import *
+from datetime import datetime
 
 app = Flask(__name__)
 app.config.from_object('settings')
@@ -73,7 +74,7 @@ def file_download(filename):
     username = current_user(app, request.cookies)
     if username:
         finfo = get_fileinfo(mongo.db, username, filename)
-        f = find_file(mongo.db, finfo)
+        f = retrieve_file(mongo.db, finfo)
 
         headers = {'Content-Type': f.content_type,
                    'Content-Length': f.length,
@@ -98,7 +99,7 @@ def file_info(filename):
     username = current_user(app, request.cookies)
     if username:
         finfo = get_fileinfo(mongo.db, username, filename)
-        f = find_file(mongo.db, finfo)
+        f = retrieve_file(mongo.db, finfo)
         del finfo['file_id']
         del finfo['_id']
         finfo['date'] = finfo['date'].strftime('%Y-%m-%d %H:%M:%S')
@@ -108,6 +109,40 @@ def file_info(filename):
         resp = {'result':'success', 'fileinfo':finfo}
         return json_result(resp)
     
+    return json_error('not authenticated', 401)
+
+@app.route('/file/versions/<filename>')
+def versions(filename):
+    username = current_user(app, request.cookies)
+    if username:
+        if 'earliest' in request.args:
+            earliest = datetime.strptime(request.args['earliest'], '%s')
+        else: earliest = None
+        if 'latest' in request.args:
+            latest = datetime.strptime(request.args['latest'], '%s')
+        else: latest = None
+        
+        versions = file_versions(mongo.db, username, filename, 
+                                 earliest, latest)
+        dates = [finfo['date'].strftime('%Y-%m-%d %H:%M:%S') \
+                        for finfo in versions]
+        return json_result({'result': 'success', 'dates': dates})
+    return json_error('not authenticated', 401)
+
+@app.route('/file/delete', methods=['POST'])
+def versions(filename):
+    username = current_user(app, request.cookies)
+    if username:
+        filename = request.form['filename']
+        if 'earliest' in request.form:
+            earliest = datetime.strptime(request.form['earliest'], '%s')
+        else: earliest = None
+        if 'latest' in request.form:
+            latest = datetime.strptime(request.form['latest'], '%s')
+        else: latest = None
+        
+        delete_file(mongo.db, username, filename, earliest, latest)
+        return json_success()
     return json_error('not authenticated', 401)
 
 @app.route('/file/share', methods=['POST'])

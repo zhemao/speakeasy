@@ -24,7 +24,7 @@ def store_file(f, username, aes_key, db):
 
     return db.fileinfo.insert(finfo)
 
-def find_file(db, finfo):
+def retrieve_file(db, finfo):
     gfs = gridfs.GridFS(db)
 
     if finfo:
@@ -39,6 +39,21 @@ def get_fileinfo(db, username, filename):
 
     return finfo
 
+def file_versions(db, username, filename, earliest=None, latest=None):
+    query = {'username': username,
+             'filename': filename}
+
+    if earliest and latest:
+        query['$and'] = [{'date': {'$gt': earliest}}, 
+                         {'date': {'$lt': latest}}]
+    elif earliest:
+        query['date'] = {'$gt': earliest}
+    elif latest:
+        query['date'] = {'$lt': latest}
+
+    return db.fileinfo.find(query).sort('date', DESCENDING)
+    
+
 def copy_file(db, user_from, user_to, filename, aes_key):
     finfo = get_fileinfo(db, user_from, filename)
     
@@ -48,6 +63,17 @@ def copy_file(db, user_from, user_to, filename, aes_key):
     del finfo['_id']
 
     return db.fileinfo.insert(finfo)
+
+def delete_file(db, username, filename, earliest=None, latest=None):
+    versions = file_versions(db, username, filename, earliest, latest)
+    gfs = gridfs.GridFS(db)
+    ids = []
+
+    for finfo in versions:
+       gfs.delete(finfo['file_id'])
+       ids.append(finfo['_id'])
+
+    db.fileinfo.delete({'_id': {'$in': ids}})
 
 def list_files(db, username):
     files = db.fileinfo.group(['filename'], {'username': username}, 
