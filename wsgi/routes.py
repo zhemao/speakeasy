@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, redirect
 from flask.ext.pymongo import PyMongo
 from crypto import *
 from api_helpers import *
@@ -10,8 +10,8 @@ app.config.from_object('settings')
 mongo = PyMongo(app)
 
 @app.route('/')
-def hello():
-    return 'Hello World!'
+def readme():
+    return redirect('/static/README.html')
 
 @app.route('/pubkey/add', methods=['POST'])
 def add_pubkey():
