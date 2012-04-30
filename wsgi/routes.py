@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, redirect
+from flask import Flask, request, Response, redirect, abort
 from flask.ext.pymongo import PyMongo
 from crypto import *
 from api_helpers import *
@@ -43,7 +43,7 @@ def get_pubkey(username):
     if entry:
         return entry['pubkey'], 200, {'Content-Type': 'text/plain'}
     else:
-        return '', 404, {}
+        abort(404)
 
 @app.route('/authenticate', methods=['POST'])
 def authenticate():
@@ -72,18 +72,18 @@ def file_upload():
 @app.route('/file/download/<filename>')
 def file_download(filename):
     username = current_user(app, request.cookies)
-    if username:
-        finfo = get_fileinfo(mongo.db, username, filename)
-        f = retrieve_file(mongo.db, finfo)
+    if not username:
+        abort(401)
+    finfo = get_fileinfo(mongo.db, username, filename)
+    f = retrieve_file(mongo.db, finfo)
 
-        headers = {'Content-Type': f.content_type,
-                   'Content-Length': f.length,
-                   'Content-Disposition': 'attachment; filename='+f.filename,
-                   'X-Symmetric-Key': finfo['aes_key']}
+    headers = {'Content-Type': f.content_type,
+               'Content-Length': f.length,
+               'Content-Disposition': 'attachment; filename='+f.filename,
+               'X-Symmetric-Key': finfo['aes_key']}
 
-        return f.read(), 200, headers
+    return f.read(), 200, headers
     
-    return json_error('not authenticated', 401)
 
 @app.route('/file/list')
 def file_list():
