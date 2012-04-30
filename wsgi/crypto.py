@@ -24,8 +24,11 @@ def authenticate_user(db, app, form):
     return None
 
 def current_user(app, cookies):
-    username = cookies['username']
-    signature = cookies['signature']
+    username = cookies.get('username')
+    signature = cookies('signature')
+
+    if not username or not signature:
+        return None
 
     if check_signature(app.config['PUB_KEY'], username, signature):
         return username
