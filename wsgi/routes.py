@@ -77,6 +77,9 @@ def file_download(filename):
     finfo = get_fileinfo(mongo.db, username, filename)
     f = retrieve_file(mongo.db, finfo)
 
+    if not finfo:
+        abort(404)
+
     headers = {'Content-Type': f.content_type,
                'Content-Length': f.length,
                'Content-Disposition': 'attachment; filename='+f.filename,
@@ -90,6 +93,7 @@ def file_list():
     username = current_user(app, request.cookies)
     if username:
         files = [finfo['filename'] for finfo in list_files(mongo.db, username)]
+        
         return json_result({'result': 'success', 'files': files})
     
     return json_error('not authenticated', 401)
@@ -100,6 +104,10 @@ def file_info(filename):
     if username:
         finfo = get_fileinfo(mongo.db, username, filename)
         f = retrieve_file(mongo.db, finfo)
+
+        if not finfo:
+            return json_error('not found', 404)
+
         del finfo['file_id']
         del finfo['_id']
         finfo['date'] = finfo['date'].strftime('%Y-%m-%d %H:%M:%S')
@@ -121,9 +129,13 @@ def versions(filename):
         if 'latest' in request.args:
             latest = datetime.strptime(request.args['latest'], '%s')
         else: latest = None
-        
+
         versions = file_versions(mongo.db, username, filename, 
                                  earliest, latest)
+        
+        if not versions:
+            return json_error('not found', 404)
+        
         dates = [finfo['date'].strftime('%Y-%m-%d %H:%M:%S') \
                         for finfo in versions]
         return json_result({'result': 'success', 'dates': dates})
@@ -154,6 +166,7 @@ def file_share():
         filename = request.form['filename']
         if copy_file(mongo.db, username, recipient, filename, aes_key):
             return json_success()
+        return json_error('not found', 404)
     
     return json_error('not authenticated', 401)
 

@@ -56,6 +56,9 @@ def file_versions(db, username, filename, earliest=None, latest=None):
 
 def copy_file(db, user_from, user_to, filename, aes_key):
     finfo = get_fileinfo(db, user_from, filename)
+
+    if not finfo:
+        return False
     
     finfo['aes_key'] = aes_key
     finfo['username'] = user_to
