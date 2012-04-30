@@ -141,11 +141,10 @@ def file_versions(filename):
         return json_result({'result': 'success', 'dates': dates})
     return json_error('not authenticated', 401)
 
-@app.route('/file/delete', methods=['POST'])
+@app.route('/file/delete/<filename>', methods=['POST'])
 def file_delete(filename):
     username = current_user(app, request.cookies)
     if username:
-        filename = request.form['filename']
         if 'earliest' in request.form:
             earliest = datetime.strptime(request.form['earliest'], '%s')
         else: earliest = None
