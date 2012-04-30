@@ -120,7 +120,7 @@ def file_info(filename):
     return json_error('not authenticated', 401)
 
 @app.route('/file/versions/<filename>')
-def versions(filename):
+def file_versions(filename):
     username = current_user(app, request.cookies)
     if username:
         if 'earliest' in request.args:
@@ -130,7 +130,7 @@ def versions(filename):
             latest = datetime.strptime(request.args['latest'], '%s')
         else: latest = None
 
-        versions = file_versions(mongo.db, username, filename, 
+        versions = get_versions(mongo.db, username, filename, 
                                  earliest, latest)
         
         if not versions:
@@ -142,7 +142,7 @@ def versions(filename):
     return json_error('not authenticated', 401)
 
 @app.route('/file/delete', methods=['POST'])
-def versions(filename):
+def file_delete(filename):
     username = current_user(app, request.cookies)
     if username:
         filename = request.form['filename']

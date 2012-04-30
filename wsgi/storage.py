@@ -39,7 +39,7 @@ def get_fileinfo(db, username, filename):
 
     return finfo
 
-def file_versions(db, username, filename, earliest=None, latest=None):
+def get_versions(db, username, filename, earliest=None, latest=None):
     query = {'username': username,
              'filename': filename}
 
@@ -68,7 +68,7 @@ def copy_file(db, user_from, user_to, filename, aes_key):
     return db.fileinfo.insert(finfo)
 
 def delete_file(db, username, filename, earliest=None, latest=None):
-    versions = file_versions(db, username, filename, earliest, latest)
+    versions = get_versions(db, username, filename, earliest, latest)
     gfs = gridfs.GridFS(db)
     ids = []
 
