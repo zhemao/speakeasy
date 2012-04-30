@@ -76,7 +76,7 @@ def delete_file(db, username, filename, earliest=None, latest=None):
        gfs.delete(finfo['file_id'])
        ids.append(finfo['_id'])
 
-    db.fileinfo.delete({'_id': {'$in': ids}})
+    db.fileinfo.remove({'_id': {'$in': ids}})
 
 def list_files(db, username):
     files = db.fileinfo.group(['filename'], {'username': username}, 
