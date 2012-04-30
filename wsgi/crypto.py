@@ -25,7 +25,7 @@ def authenticate_user(db, app, form):
 
 def current_user(app, cookies):
     username = cookies.get('username')
-    signature = cookies('signature')
+    signature = cookies.get('signature')
 
     if not username or not signature:
         return None
