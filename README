@@ -28,3 +28,6 @@ reencrypting the AES key with the other user's public key.
 
 Speakeasy is designed for Red Hat's new OpenShift platform and uses MongoDB
 with GridFS for storage. 
+
+To use speakeasy, install the command-line client at 
+https://github.com/zhemao/bootlegger.
