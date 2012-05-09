@@ -85,7 +85,7 @@ def file_download(filename):
                'Content-Disposition': 'attachment; filename='+f.filename,
                'X-Symmetric-Key': finfo['aes_key']}
 
-    return f.read(), 200, headers
+    return Response(f, 200, headers, direct_passthrough=True)
     
 
 @app.route('/file/list')
