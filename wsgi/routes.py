@@ -1,9 +1,9 @@
-from flask import Flask, request, Response, redirect
+from flask import Flask, request, Response, redirect, abort
 from flask.ext.pymongo import PyMongo
 from crypto import *
 from api_helpers import *
 from storage import *
-import os
+from datetime import datetime
 
 app = Flask(__name__)
 app.config.from_object('settings')
@@ -43,7 +43,7 @@ def get_pubkey(username):
     if entry:
         return entry['pubkey'], 200, {'Content-Type': 'text/plain'}
     else:
-        return '', 404, {}
+        abort(404)
 
 @app.route('/authenticate', methods=['POST'])
 def authenticate():
@@ -72,24 +72,28 @@ def file_upload():
 @app.route('/file/download/<filename>')
 def file_download(filename):
     username = current_user(app, request.cookies)
-    if username:
-        finfo = get_fileinfo(mongo.db, username, filename)
-        f = find_file(mongo.db, finfo)
+    if not username:
+        abort(401)
+    finfo = get_fileinfo(mongo.db, username, filename)
+    f = retrieve_file(mongo.db, finfo)
 
-        headers = {'Content-Type': f.content_type,
-                   'Content-Length': f.length,
-                   'Content-Disposition': 'attachment; filename='+f.filename,
-                   'X-Symmetric-Key': finfo['aes_key']}
+    if not finfo:
+        abort(404)
 
-        return f.read(), 200, headers
+    headers = {'Content-Type': f.content_type,
+               'Content-Length': f.length,
+               'Content-Disposition': 'attachment; filename='+f.filename,
+               'X-Symmetric-Key': finfo['aes_key']}
+
+    return f.read(), 200, headers
     
-    return json_error('not authenticated', 401)
 
 @app.route('/file/list')
 def file_list():
     username = current_user(app, request.cookies)
     if username:
         files = [finfo['filename'] for finfo in list_files(mongo.db, username)]
+        
         return json_result({'result': 'success', 'files': files})
     
     return json_error('not authenticated', 401)
@@ -99,7 +103,11 @@ def file_info(filename):
     username = current_user(app, request.cookies)
     if username:
         finfo = get_fileinfo(mongo.db, username, filename)
-        f = find_file(mongo.db, finfo)
+        f = retrieve_file(mongo.db, finfo)
+
+        if not finfo:
+            return json_error('not found', 404)
+
         del finfo['file_id']
         del finfo['_id']
         finfo['date'] = finfo['date'].strftime('%Y-%m-%d %H:%M:%S')
@@ -111,6 +119,43 @@ def file_info(filename):
     
     return json_error('not authenticated', 401)
 
+@app.route('/file/versions/<filename>')
+def file_versions(filename):
+    username = current_user(app, request.cookies)
+    if username:
+        if 'earliest' in request.args:
+            earliest = datetime.strptime(request.args['earliest'], '%s')
+        else: earliest = None
+        if 'latest' in request.args:
+            latest = datetime.strptime(request.args['latest'], '%s')
+        else: latest = None
+
+        versions = get_versions(mongo.db, username, filename, 
+                                 earliest, latest)
+        
+        if not versions:
+            return json_error('not found', 404)
+        
+        dates = [finfo['date'].strftime('%Y-%m-%d %H:%M:%S') \
+                        for finfo in versions]
+        return json_result({'result': 'success', 'dates': dates})
+    return json_error('not authenticated', 401)
+
+@app.route('/file/delete/<filename>', methods=['POST'])
+def file_delete(filename):
+    username = current_user(app, request.cookies)
+    if username:
+        if 'earliest' in request.form:
+            earliest = datetime.strptime(request.form['earliest'], '%s')
+        else: earliest = None
+        if 'latest' in request.form:
+            latest = datetime.strptime(request.form['latest'], '%s')
+        else: latest = None
+        
+        delete_file(mongo.db, username, filename, earliest, latest)
+        return json_success()
+    return json_error('not authenticated', 401)
+
 @app.route('/file/share', methods=['POST'])
 def file_share():
     username = current_user(app, request.cookies)
@@ -120,6 +165,7 @@ def file_share():
         filename = request.form['filename']
         if copy_file(mongo.db, username, recipient, filename, aes_key):
             return json_success()
+        return json_error('not found', 404)
     
     return json_error('not authenticated', 401)
 
