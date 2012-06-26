@@ -61,7 +61,7 @@ def file_upload():
     username = current_user(app, request.cookies)
     if username:    
         f = request.files['file']
-        aes_key = request.headers['X-Symmetric-Key']
+        aes_key = request.headers['Symmetric-Key']
 
         if store_file(f, username, aes_key, mongo.db):
             return json_success()
@@ -83,7 +83,7 @@ def file_download(filename):
     headers = {'Content-Type': f.content_type,
                'Content-Length': f.length,
                'Content-Disposition': 'attachment; filename='+f.filename,
-               'X-Symmetric-Key': finfo['aes_key']}
+               'Symmetric-Key': finfo['aes_key']}
 
     return f.read(), 200, headers
     
@@ -160,7 +160,7 @@ def file_delete(filename):
 def file_share():
     username = current_user(app, request.cookies)
     if username:
-        aes_key = request.headers['X-Symmetric-Key']
+        aes_key = request.headers['Symmetric-Key']
         recipient = request.form['recipient']
         filename = request.form['filename']
         if copy_file(mongo.db, username, recipient, filename, aes_key):
