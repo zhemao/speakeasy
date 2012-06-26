@@ -87,12 +87,12 @@ def file_download(filename):
 
     return Response(f, 200, headers, direct_passthrough=True)
     
-
+@app.route('/file/list/<prefix>')
 @app.route('/file/list')
-def file_list():
+def file_list(prefix = ''):
     username = current_user(app, request.cookies)
     if username:
-        files = [finfo['filename'] for finfo in list_files(mongo.db, username)]
+        files = [finfo['filename'] for finfo in list_files(mongo.db, username, prefix)]
         
         return json_result({'result': 'success', 'files': files})
     

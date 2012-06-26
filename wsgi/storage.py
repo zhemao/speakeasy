@@ -78,8 +78,13 @@ def delete_file(db, username, filename, earliest=None, latest=None):
 
     db.fileinfo.remove({'_id': {'$in': ids}})
 
-def list_files(db, username):
-    files = db.fileinfo.group(['filename'], {'username': username}, 
+def list_files(db, username, prefix=''):
+    query = {'username': username}
+    
+    if prefix:
+        query['filename'] = {'$regex': '^' + prefix + '.*$'}
+
+    files = db.fileinfo.group(['filename'], query,
                 {'date': datetime(1970, 1, 1)},
                 '''
                 function(obj, prev){
