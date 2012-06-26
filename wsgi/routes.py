@@ -89,7 +89,7 @@ def file_download(filename):
     
 @app.route('/file/list/<pattern>')
 @app.route('/file/list')
-def file_list(prefix = None):
+def file_list(pattern = None):
     username = current_user(app, request.cookies)
     if username:
         files = [finfo['filename'] for finfo in list_files(mongo.db, username, pattern)]
