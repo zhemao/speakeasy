@@ -61,6 +61,7 @@ def copy_file(db, user_from, user_to, filename, aes_key):
     if not finfo:
         return False
     
+    finfo['filename'] = user_from + '_' + filename
     finfo['aes_key'] = aes_key
     finfo['username'] = user_to
     finfo['date'] = datetime.now()
