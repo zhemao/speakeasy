@@ -2,6 +2,7 @@ import gridfs
 from werkzeug import secure_filename
 from pymongo import ASCENDING, DESCENDING
 from datetime import datetime
+import fnmatch
 
 def store_file(f, username, aes_key, db):
     fname = secure_filename(f.filename)
@@ -82,7 +83,7 @@ def list_files(db, username, pattern=None):
     query = {'username': username}
     
     if pattern:
-        query['filename'] = {'$regex': pattern}
+        query['filename'] = {'$regex': fnmatch.translate(pattern)}
 
     files = db.fileinfo.group(['filename'], query,
                 {'date': datetime(1970, 1, 1)},
