@@ -34,6 +34,10 @@ def retrieve_file(db, finfo):
     return None
 
 def get_fileinfo(db, username, filename):
+    db.fileinfo.ensure_index([('username', ASCENDING), 
+                              ('filename', ASCENDING), 
+                              ('date', DESCENDING)])
+
     finfo = db.fileinfo.find_one({'username': username,
                                   'filename': filename},
                                  sort = [('date', DESCENDING)])

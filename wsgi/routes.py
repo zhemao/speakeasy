@@ -4,6 +4,7 @@ from crypto import *
 from api_helpers import *
 from storage import *
 from datetime import datetime
+from pymongo import ASCENDING, DESCENDING
 
 app = Flask(__name__)
 app.config.from_object('settings')
@@ -38,6 +39,7 @@ def server_pub():
 @app.route('/pubkey/<username>')
 def get_pubkey(username):
     db = mongo.db
+    db.keys.ensure_index('username')
     entry = db.keys.find_one({'username': username})
 
     if entry:
