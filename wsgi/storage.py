@@ -33,10 +33,14 @@ def retrieve_file(db, finfo):
 
     return None
 
-def get_fileinfo(db, username, filename):
+def ensure_file_index(db):
     db.fileinfo.ensure_index([('username', ASCENDING), 
                               ('filename', ASCENDING), 
                               ('date', DESCENDING)])
+
+
+def get_fileinfo(db, username, filename):
+    ensure_file_index(db)
 
     finfo = db.fileinfo.find_one({'username': username,
                                   'filename': filename},
@@ -45,6 +49,8 @@ def get_fileinfo(db, username, filename):
     return finfo
 
 def get_versions(db, username, filename, earliest=None, latest=None):
+    ensure_file_index(db)
+
     query = {'username': username,
              'filename': filename}
 
@@ -85,6 +91,8 @@ def delete_file(db, username, filename, earliest=None, latest=None):
     db.fileinfo.remove({'_id': {'$in': ids}})
 
 def list_files(db, username, pattern=None):
+    ensure_file_index(db)
+
     query = {'username': username}
     
     if pattern:
