@@ -15,7 +15,7 @@ def store_file(f, username, aes_key, db):
     gf.close()
     f.close()
 
-    date = datetime.now()
+    date = datetime.utcnow()
 
     finfo = {'file_id': gf._id, 
              'username': username, 
@@ -74,7 +74,7 @@ def copy_file(db, user_from, user_to, filename, aes_key):
     finfo['filename'] = user_from + '_' + filename
     finfo['aes_key'] = aes_key
     finfo['username'] = user_to
-    finfo['date'] = datetime.now()
+    finfo['date'] = datetime.utcnow()
     del finfo['_id']
 
     return db.fileinfo.insert(finfo)
