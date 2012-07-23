@@ -21,7 +21,8 @@ def store_file(f, username, aes_key, db):
              'username': username, 
              'filename': fname,
              'aes_key': aes_key,
-             'date': date}
+             'date': date,
+             'md5': gf.md5}
 
     return db.fileinfo.insert(finfo)
 
