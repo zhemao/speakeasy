@@ -64,8 +64,9 @@ def file_upload():
     if username:    
         f = request.files['file']
         aes_key = request.headers['Symmetric-Key']
+        cksum = request.headers['Plaintext-MD5']
 
-        if store_file(f, username, aes_key, mongo.db):
+        if store_file(f, username, aes_key, cksum, mongo.db):
             return json_success()
         return json_error('database error', 500)
 

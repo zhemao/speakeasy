@@ -4,7 +4,7 @@ from pymongo import ASCENDING, DESCENDING
 from datetime import datetime
 import fnmatch
 
-def store_file(f, username, aes_key, db):
+def store_file(f, username, aes_key, cksum, db):
     fname = secure_filename(f.filename)
     
     gfs = gridfs.GridFS(db)
@@ -22,7 +22,7 @@ def store_file(f, username, aes_key, db):
              'filename': fname,
              'aes_key': aes_key,
              'date': date,
-             'md5': gf.md5}
+             'md5': cksum}
 
     return db.fileinfo.insert(finfo)
 
